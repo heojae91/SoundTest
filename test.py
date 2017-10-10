@@ -7,11 +7,11 @@ def plotingSignal(object, filename) :
 
     axes = plt.gca()
     axes.set_ylim([-1.0, 1.0])
-
+    axes.set_xlim([0.0, object.__len__()])
     s = fig.add_subplot(111)
     amplitude = np.fromstring(object, np.float32)
     s.plot(amplitude)
-    fig.savefig(filename)
+    fig.savefig("result/"+filename)
 
 p = pyaudio.PyAudio()
 
