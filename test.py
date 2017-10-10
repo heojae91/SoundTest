@@ -8,6 +8,7 @@ def plotingSignal(object, filename) :
     axes = plt.gca()
     axes.set_ylim([-1.0, 1.0])
     axes.set_xlim([0.0, object.__len__()])
+
     s = fig.add_subplot(111)
     amplitude = np.fromstring(object, np.float32)
     s.plot(amplitude)
@@ -78,8 +79,8 @@ for i in range(20) :
     print("samples : ", samples[i], " - standard : ", standardSound[i], ", result : ", samples[i] - standardSound[i])
 
 
-plotingSignal(samples[:20], 'plt.png')
-plotingSignal(standardSound[:20], 'std.png')
+plotingSignal(samples[:100], 'plt.png')
+plotingSignal(standardSound[:100], 'std.png')
 stream.stop_stream()
 stream.close()
 
