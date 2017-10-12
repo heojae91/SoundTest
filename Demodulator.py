@@ -3,4 +3,4 @@ class Demodulator :
         print("Loaded demodulator")
 
     def demod(self, wavefile):
-        return 
+        return
