@@ -18,13 +18,16 @@ def plotingSignal(object, filename) :
 sinSig = (np.sin(np.arange(48000*1.0)*4000.0/48000)).astype(np.float32)
 cosSig = (2 ** (1/2) * (np.cos(2*np.pi*np.arange(48000*1.0)*4000.0/48000)).astype(np.float32))
 
-plotingSignal(sinSig[:200], "sine_sig")
-plotingSignal(cosSig[:200], "cosine_sig")
+# plotingSignal(sinSig[:200], "sine_sig")
+# plotingSignal(cosSig[:200], "cosine_sig")
 
-upconvertedSig = np.convolve(sinSig, cosSig)
+upconvertedSig = np.convolve(sinSig[23500:24500], cosSig, 'same')
+downconvertedSig = np.convolve(upconvertedSig[23500:24500], cosSig, 'same')
 
-plotingSignal(upconvertedSig[:200], "upconverted")
+print(sinSig.__len__())
+print(cosSig.__len__())
 
-downconvertedSig = np.convolve(upconvertedSig, cosSig)
-
-plotingSignal(downconvertedSig[:200], "downconverted")
+print(upconvertedSig.__len__())
+print(downconvertedSig.__len__())
+plotingSignal(upconvertedSig, "upconverted")
+plotingSignal(downconvertedSig, "downconverted")
