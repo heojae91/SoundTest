@@ -15,8 +15,8 @@ def plotingSignal(object, filename) :
     fig.savefig("result/"+filename)
     fig.clear()
 
-sinSig = (np.sin(2 * np.pi * np.arange(48000*1.0)*1.0/48000)).astype(np.float32)
-cosSig = (np.cos(2 * np.pi * np.arange(48000*1.0)*2.0/48000)).astype(np.float32)
+sinSig = (np.sin(2 * np.pi * np.arange(48000*1.0)*4.0/48000)).astype(np.float32)
+cosSig = (np.cos(2 * np.pi * np.arange(48000*1.0)*16.0/48000)).astype(np.float32)
 # cosSig = (2 ** (1/2) * (np.cos(2*np.pi*np.arange(48000*1.0)*4000.0/48000)).astype(np.float32))
 
 upconvertedSig = np.convolve(sinSig, cosSig)
