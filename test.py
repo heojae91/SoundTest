@@ -15,19 +15,22 @@ def plotingSignal(object, filename) :
     fig.savefig("result/"+filename)
     fig.clear()
 
-sinSig = (np.sin(np.arange(48000*1.0)*4000.0/48000)).astype(np.float32)
-cosSig = (2 ** (1/2) * (np.cos(2*np.pi*np.arange(48000*1.0)*4000.0/48000)).astype(np.float32))
+sinSig = (np.sin(2 * np.pi * np.arange(48000*1.0)*1.0/48000)).astype(np.float32)
+cosSig = (np.cos(2 * np.pi * np.arange(48000*1.0)*2.0/48000)).astype(np.float32)
+# cosSig = (2 ** (1/2) * (np.cos(2*np.pi*np.arange(48000*1.0)*4000.0/48000)).astype(np.float32))
 
-# plotingSignal(sinSig[:200], "sine_sig")
-# plotingSignal(cosSig[:200], "cosine_sig")
-
-upconvertedSig = np.convolve(sinSig[23500:24500], cosSig, 'same')
-downconvertedSig = np.convolve(upconvertedSig[23500:24500], cosSig, 'same')
+upconvertedSig = np.convolve(sinSig, cosSig)
+downconvertedSig = np.convolve(upconvertedSig, cosSig)
 
 print(sinSig.__len__())
 print(cosSig.__len__())
 
 print(upconvertedSig.__len__())
 print(downconvertedSig.__len__())
+
+
+plotingSignal(sinSig, "sine_sig")
+plotingSignal(cosSig, "cosine_sig")
+
 plotingSignal(upconvertedSig, "upconverted")
 plotingSignal(downconvertedSig, "downconverted")
