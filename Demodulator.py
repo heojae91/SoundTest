@@ -10,6 +10,10 @@ baudRate = 4000   # Set baud rate as 4000 Hz
 CHUNKSIZE = 1024 # Size of chunk
 
 # Get bit sequence from signal
+def downconverter(signal, cosSignal) :
+    return signal * cosSignal
+
+
 def demod(recorded) :
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paFloat32,

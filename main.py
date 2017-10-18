@@ -42,7 +42,8 @@ fs = 48000
 ts = 1.0/fs
 t = np.arange(0, 1, ts)
 
-filteredSignal = Filter.butter_bandpass_filter(signal, lowcut=18000, highcut=22000, fs=fs)
+#filteredSignal = Filter.butter_bandpass_filter(signal, lowcut=18000, highcut=22000, fs=fs)
+filteredSignal = signal
 plotSpectrum(filteredSignal, fs)
 plt.show()
 
@@ -55,7 +56,7 @@ stream = p.open(format=pyaudio.paFloat32,
                 rate=fs,
                 output=True)
 plt.clf()
-plt.plot(filteredSignal[100:200])
+plt.plot(filteredSignal[:48000])
 plt.show()
 stream.write(volume * filteredSignal)
 
