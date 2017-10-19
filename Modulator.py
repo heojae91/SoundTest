@@ -20,15 +20,14 @@ def upconverter(sampArray, carrierFreq) :
     cosSig = []
 
 def generateSignSequence(sequence, f=4000, fs=48000) :
-    samplesPerSymbol = fs / f
+    samplesPerSymbol = int(fs / f)
     signArray = []
-    for i in range(fs) :
-        if (sequence[i % (50 * samplesPerSymbol)][i % samplesPerSymbol] == 1) :
-            signArray.append(1)
+    for i in range(f) :
+        if (sequence[int(i / 50) % 8][i % 50] == 1) :
+            signArray = signArray + [1] * samplesPerSymbol
         else :
-            signArray.append(-1)
+            signArray = signArray + [-1] * samplesPerSymbol
     return signArray
-
 
 def generateSequence(sequence) :
     fs = 48000  # Set sample rate 48000 Hz
@@ -57,5 +56,12 @@ def generateSequence(sequence) :
     return samples
 
 def convolveSignal(signal, fs=48000) :
-    cosineSignal = 2 ** (1 / 2) * np.cos(2 * np.pi * np.arange(1.0 * fs) * 16000 / fs)
+    cosineSignal = 2 ** (1 / 2) * np.cos(2 * np.pi * np.arange(1.0 * fs) * 20000 / fs)
     return signal * cosineSignal
+
+def convolveSign(signArray, fs=48000) :
+    cosineSignal = np.cos(2 * np.pi * np.arange(1.0 * fs) * 20000 / fs)
+    result = []
+    for i in range(fs) :
+        result.append(cosineSignal[i] * signArray[i])
+    return result

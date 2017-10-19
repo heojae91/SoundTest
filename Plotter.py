@@ -15,3 +15,4 @@ def plotSpectrum(y, fs) :
     plt.plot(frq, abs(Y), 'r')
     plt.xlabel('Freq (Hz)')
     plt.ylabel('|Y(freq)|')
+    plt.show()
