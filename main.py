@@ -29,28 +29,31 @@ fs = 48000
 ts = 1.0/fs
 t = np.arange(0, 1, ts)
 
-# plt.clf()
-# plt.plot(convolvedSignal[0:500])
-# plt.show()
-
-filteredSignal = Filter.butter_bandpass_filter(convolvedSignal, lowcut=18000, highcut=22000, fs=fs)
-#Plotter.plotSpectrum(filteredSignal, fs)
-convolvedSignal= Modulator.convolveSignal(filteredSignal)
-#filteredSignal = Filter.butter_bandpass_filter(convolvedSignal, lowcut=2000, highcut=6000, fs = fs)
-#Plotter.plotSpectrum(filteredSignal, fs)
+# filteredSignal = Filter.butter_bandpass_filter(convolvedSignal, lowcut=18000, highcut=22000, fs=fs)
+# Plotter.plotSpectrum(filteredSignal, fs)
+# convolvedSignal= Modulator.convolveSignal(filteredSignal)
+# filteredSignal = Filter.butter_bandpass_filter(convolvedSignal, lowcut=2000, highcut=6000, fs = fs)
+# Plotter.plotSpectrum(filteredSignal, fs)
 
 volume = 0.5
-Demodulator.demod(filteredSignal)
-Plotter.plotSpectrum(convolvedSignal, fs)
+# Demodulator.demod(filteredSignal)
+# Plotter.plotSpectrum(convolvedSignal, fs)
 
 stream = p.open(format=pyaudio.paFloat32,
                 channels=1,
                 rate=fs,
                 output=True)
-# plt.clf()
-# plt.plot(convolvedSignal)
-# plt.show()
-stream.write(volume * filteredSignal)
+
+ss = Modulator.getSinusoidSignal()
+convolvedSignal = ss * signArray
+
+Plotter.plotSpectrum(convolvedSignal, fs)
+
+plt.clf()
+plt.plot(convolvedSignal[:100])
+plt.show()
+
+# stream.write(volume * filteredSignal)
 
 stream.stop_stream()
 stream.close()

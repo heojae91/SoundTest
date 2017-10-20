@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy import fft
 
-def plotSpectrum(y, fs) :
+def plotSpectrum(y, fs=48000) :
     n = len(y)
     k = np.arange(n)
     T = n/ fs
