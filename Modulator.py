@@ -1,25 +1,6 @@
 import numpy as np
-import pyaudio
-import matplotlib.pyplot as plt
-import scipy
 
-def plotingSignal(object, filename) :
-    fig = plt.figure()
-
-    axes = plt.gca()
-    axes.set_ylim([-1.5, 1.5])
-    axes.set_xlim([0.0, object.__len__()])
-
-    s = fig.add_subplot(111)
-    amplitude = np.fromstring(object, np.float32)
-    s.plot(amplitude)
-    fig.savefig("result/"+filename)
-    fig.clear()
-
-def upconverter(sampArray, carrierFreq) :
-    cosSig = []
-
-def generateSignSequence(sequence, f=4000, fs=48000) :
+def getBasebandSignal(sequence, f=4000, fs=48000) :
     samplesPerSymbol = int(fs / f)
     signArray = []
     for i in range(f) :
@@ -29,16 +10,12 @@ def generateSignSequence(sequence, f=4000, fs=48000) :
             signArray = signArray + [-1] * samplesPerSymbol
     return signArray
 
-def getSinusoidSignal(fs=48000) :
-    return np.sin(2 * np.pi * np.arange(1.0 * fs) * 4000 / fs)
+def getSinusoidSignal(freq=20000, fs=48000) :
+    return 2 ** (1/2) * np.cos(2 * np.pi * np.arange(1.0 * fs) * freq / fs)
 
-def convolveSignal(signal, fs=48000) :
-    cosineSignal = 2 ** (1 / 2) * np.cos(2 * np.pi * np.arange(1.0 * fs) * 16000 / fs)
-    return signal * cosineSignal
+def modulateSignal(basebandSignal, freq=20000, fs=48000) :
+    return basebandSignal* getSinusoidSignal(freq=freq, fs=fs)
 
-def convolveSign(signArray, fs=48000) :
-    cosineSignal = np.cos(2 * np.pi * np.arange(1.0 * fs) * 20000 / fs)
-    result = []
-    for i in range(fs) :
-        result.append(cosineSignal[i] * signArray[i])
-    return result
+def upconvertSignal(modulatedSignal, freq=20000, fs=48000)  :
+    cosineSignal = 2 ** (1 / 2) * np.cos(2 * np.pi * np.arange(1.0 * fs) * freq / fs)
+    return modulatedSignal * cosineSignal
