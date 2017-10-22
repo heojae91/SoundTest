@@ -25,15 +25,20 @@ basebandSignal = Modulator.getBasebandSignal(trainingSequence)      # Generate b
 modulatedSignal = Modulator.modulateSignal(basebandSignal)          # Generate passband signal
 
 # Filtering passband signal
-filteredSignal = Filter.butter_bandpass_filter(modulatedSignal, lowcut=18000, highcut=20000, fs=fs)
+filteredSignal = Filter.butter_bandpass_filter(modulatedSignal, lowcut=18000, highcut=22000, fs=fs)
 
-receivedSignal = Modulator.upconvertSignal(modulatedSignal)       # Retrieving baseband signal
+receivedSignal = Demodulator.downconverter(modulatedSignal)       # Retrieving baseband signal
 resultSignal = Filter.butter_lowpass_filter(receivedSignal, cutoff=4000, fs=fs)
+
+# testModulate = np.concatenate(modulatedSignal[100:], modulatedSignal[:100])
+# print(testModulate)
+# testReceivedSignal = Demodulator.downconverter(testModulate)
+# testResultSignal = Filter.butter_lowpass_filter(testReceivedSignal, cutoff=4000, fs=fs)
 
 p = pyaudio.PyAudio()
 p_receiver = pyaudio.PyAudio()
 
-Plotter.plotSpectrum(resultSignal, fs)
+# Plotter.plotSpectrum(resultSignal, fs)
 
 stream = p.open(format=pyaudio.paFloat32,
                 channels=1,
@@ -48,11 +53,11 @@ plt.plot(modulatedSignal[:1200])
 plt.subplot(312)
 plt.plot(basebandSignal[:1200])
 plt.subplot(313)
-plt.plot(resultSignal[:1200])
+plt.plot(resultSignal[24:36])
 plt.show()
 
 volume = 0.5
-stream.write(volume * filteredSignal)
+# stream.write(volume * filteredSignal)
 
 stream.stop_stream()
 stream.close()
