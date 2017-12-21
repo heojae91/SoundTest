@@ -1,6 +1,7 @@
 import numpy as np
 import pyaudio
 import matplotlib.pyplot as plt
+import wave
 
 import Modulator
 import Demodulator
@@ -19,8 +20,12 @@ trainingSequence = ((0,0,1,0,0,1,0,1,1,1,0,0,0,0,1,0,0,0,1,0,0,1,0,1,1,1,0,0,0,0
 
 fs = 48000
 ts = 1.0/fs
-t = np.arange(0, 1, ts)
+t = np.arange(48000)
+freq = 20000
 
+sineSignal = Modulator.getSinusoidSignal(20000, 48000)
+
+# sine_filtered = Filter.butter_bandpass_filter(sineSignal, 18000, 22000, 48000)
 basebandSignal = Modulator.getBasebandSignal(trainingSequence)      # Generate baseband signal
 modulatedSignal = Modulator.modulateSignal(basebandSignal)          # Generate passband signal
 
@@ -45,21 +50,28 @@ stream = p.open(format=pyaudio.paFloat32,
                 rate=fs,
                 output=True)
 
+# Plotter.plotSpectrum(modulatedSignal, fs)
 # Plotter.plotSpectrum(filteredSignal, fs)
 
-plt.figure(1)
-plt.subplot(311)
-plt.plot(modulatedSignal[:1200])
-plt.subplot(312)
-plt.plot(basebandSignal[:1200])
-plt.subplot(313)
-plt.plot(resultSignal[24:36])
-plt.show()
+# plt.figure(1)
+# plt.subplot(311)
+# plt.plot(filteredSignal[:1200])
+# plt.subplot(312)
+# plt.plot(basebandSignal[:1200])
+# plt.subplot(313)
+# plt.plot(resultSignal[0:1200])
+# plt.show()
 
 volume = 0.5
-# stream.write(volume * filteredSignal)
+stream.write(volume * sineSignal)
 
 stream.stop_stream()
 stream.close()
-
 p.terminate()
+
+waveFile = wave.open('result/output.wav', 'wb')
+waveFile.setnchannels(1)
+waveFile.setsampwidth(p.get_sample_size(pyaudio.paFloat32))
+waveFile.setframerate(48000)
+waveFile.writeframes(b''.join(filteredSignal))
+waveFile.close()
