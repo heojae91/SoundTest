@@ -3,14 +3,15 @@ import numpy as np
 def getBasebandSignal(sequence, f=4000, fs=48000) :
     samplesPerSymbol = int(fs / f)
     signArray = []
-    signArray = np.ndarray(signArray)
+
+    signArray = np.array(signArray)
+
     for i in range(f) :
         if (sequence[int(i / 50) % 8][i % 50] == 1) :
-            signArray = signArray + [1] * samplesPerSymbol
+            signArray = np.append(signArray, ([1] * samplesPerSymbol))
         else :
-            signArray = signArray + [-1] * samplesPerSymbol
-    print(signArray)
-    return signArray
+            signArray = np.append(signArray, ([-1] * samplesPerSymbol))
+    return signArray.astype(np.float32)
 
 def getSinusoidSignal(freq=20000, fs=48000) :
     return 2 ** (1/2) * np.cos(2 * np.pi * np.arange(fs * 1.0)* freq / fs).astype(np.float32)

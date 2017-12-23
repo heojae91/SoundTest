@@ -2,6 +2,8 @@ import numpy as np
 import pyaudio
 import matplotlib.pyplot as plt
 import wave
+import scipy.io.wavfile as wav
+
 
 import Modulator
 import Demodulator
@@ -52,6 +54,7 @@ stream = p.open(format=pyaudio.paFloat32,
 
 # Plotter.plotSpectrum(modulatedSignal, fs)
 # Plotter.plotSpectrum(filteredSignal, fs)
+Plotter.getSpecgram(sineSignal)
 
 # plt.figure(1)
 # plt.subplot(311)
@@ -63,15 +66,21 @@ stream = p.open(format=pyaudio.paFloat32,
 # plt.show()
 
 volume = 0.5
-stream.write(volume * sineSignal)
+stream.write(volume * filteredSignal)
 
 stream.stop_stream()
 stream.close()
 p.terminate()
 
+# Plotter.plotSpectrum(filteredSignal, fs)
+filteredSignal = filteredSignal.astype(np.float32)
+print(type(filteredSignal[1]))
+wav.write('result/output2.wav', 48000, filteredSignal)
+filteredSineSignal = Filter.butter_bandpass_filter(sineSignal, lowcut=18000, highcut=22000, fs=48000)
 waveFile = wave.open('result/output.wav', 'wb')
 waveFile.setnchannels(1)
-waveFile.setsampwidth(p.get_sample_size(pyaudio.paFloat32))
+# waveFile.setsampwidth(p.get_sample_size(pyaudio.paFloat32))
+waveFile.setsampwidth(4)
 waveFile.setframerate(48000)
-waveFile.writeframes(b''.join(filteredSignal))
+waveFile.writeframes(b''.join(sineSignal))
 waveFile.close()
