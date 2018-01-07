@@ -3,12 +3,35 @@ import pyaudio
 import matplotlib.pyplot as plt
 import wave
 import scipy.io.wavfile as wav
-
+import sys
+import array
+import struct
 
 import Modulator
 import Demodulator
 import Filter
 import Plotter
+
+def floatToInt(data) :
+    for i in range(data.__len__()) :
+        data[i] = data[i] * 32768
+    return data
+
+def convert(fin, fout, chunk_size=1024*1024) :
+    chunk_size *= 4
+
+    waveout = wave.open(fout, "wb")
+    waveout.setparams((1, 1, 48000, 0, "NONE", ""))
+
+    while True :
+        raw_floats = fin.read(chunk_size)
+        if raw_floats == "" :
+            return
+
+        floats = array.array('f', raw_floats)
+        samples = [sample * 32767 for sample in floats]
+        raw_ints = struct.pack("<%dh" % len(samples), *samples)
+        waveout.writeframes(raw_ints)
 
 # 26-bit GSM Training Sequence
 trainingSequence = ((0,0,1,0,0,1,0,1,1,1,0,0,0,0,1,0,0,0,1,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),
@@ -28,14 +51,16 @@ freq = 20000
 sineSignal = Modulator.getSinusoidSignal(20000, 48000)
 
 # sine_filtered = Filter.butter_bandpass_filter(sineSignal, 18000, 22000, 48000)
-basebandSignal = Modulator.getBasebandSignal(trainingSequence)      # Generate baseband signal
-modulatedSignal = Modulator.modulateSignal(basebandSignal)          # Generate passband signal
+print("BB")
+basebandSignal = Modulator.getBasebandSignal(trainingSequence, round=10)      # Generate baseband signal
+print("BM")
+modulatedSignal = Modulator.modulateSignal(basebandSignal, round=10)          # Generate passband signal
 
 # Filtering passband signal
 filteredSignal = Filter.butter_bandpass_filter(modulatedSignal, lowcut=18000, highcut=22000, fs=fs)
 
-receivedSignal = Demodulator.downconverter(modulatedSignal)       # Retrieving baseband signal
-resultSignal = Filter.butter_lowpass_filter(receivedSignal, cutoff=4000, fs=fs)
+# receivedSignal = Demodulator.downconverter(modulatedSignal)       # Retrieving baseband signal
+# resultSignal = Filter.butter_lowpass_filter(receivedSignal, cutoff=4000, fs=fs)
 
 # testModulate = np.concatenate(modulatedSignal[100:], modulatedSignal[:100])
 # print(testModulate)
@@ -52,9 +77,10 @@ stream = p.open(format=pyaudio.paFloat32,
                 rate=fs,
                 output=True)
 
+
 # Plotter.plotSpectrum(modulatedSignal, fs)
 # Plotter.plotSpectrum(filteredSignal, fs)
-Plotter.getSpecgram(sineSignal)
+# Plotter.getSpecgram(sineSignal)
 
 # plt.figure(1)
 # plt.subplot(311)
@@ -72,11 +98,21 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
+max = -1000.0
+for i in range(modulatedSignal.__len__()) :
+    if (modulatedSignal[i] > max) :
+        max = modulatedSignal[i]
+
+print("Maximum :  ", max)
+
 # Plotter.plotSpectrum(filteredSignal, fs)
 filteredSignal = filteredSignal.astype(np.float32)
-print(type(filteredSignal[1]))
+# newFilteredSignal = floatToInt(filteredSignal).astype(np.int16)
+
+# for i in range(filteredSignal.__len__()) :
+#     print(filteredSignal[i])
+
 wav.write('result/output2.wav', 48000, filteredSignal)
-filteredSineSignal = Filter.butter_bandpass_filter(sineSignal, lowcut=18000, highcut=22000, fs=48000)
 waveFile = wave.open('result/output.wav', 'wb')
 waveFile.setnchannels(1)
 # waveFile.setsampwidth(p.get_sample_size(pyaudio.paFloat32))
@@ -84,3 +120,5 @@ waveFile.setsampwidth(4)
 waveFile.setframerate(48000)
 waveFile.writeframes(b''.join(sineSignal))
 waveFile.close()
+
+convert(open("result/output2.wav", "rb"), open("result/output3.wav", "wb"))
