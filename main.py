@@ -98,12 +98,9 @@ stream.stop_stream()
 stream.close()
 p.terminate()
 
-max = -1000.0
-for i in range(modulatedSignal.__len__()) :
-    if (modulatedSignal[i] > max) :
-        max = modulatedSignal[i]
+max = 1000.0
 
-print("Maximum :  ", max)
+
 
 # Plotter.plotSpectrum(filteredSignal, fs)
 filteredSignal = filteredSignal.astype(np.float32)
@@ -111,14 +108,24 @@ filteredSignal = filteredSignal.astype(np.float32)
 
 # for i in range(filteredSignal.__len__()) :
 #     print(filteredSignal[i])
-
+for i in range(filteredSignal.__len__()) :
+    if (filteredSignal[i] < max) :
+        max = filteredSignal[i]
+print("Maximum :  ", max)
 wav.write('result/output2.wav', 48000, filteredSignal)
+
+intSignal = np.array([0]*filteredSignal.__len__(), dtype=np.int16)
+print("filter : ", filteredSignal.__len__(), "output : ", intSignal.__len__())
+print(intSignal.dtype)
+
+for i in range(filteredSignal.__len__()) :
+    intSignal[i] = int(filteredSignal[i] * 32767 / 2.84389)
+
+wav.write('result/output3.wav', 48000, intSignal)
 waveFile = wave.open('result/output.wav', 'wb')
 waveFile.setnchannels(1)
 # waveFile.setsampwidth(p.get_sample_size(pyaudio.paFloat32))
-waveFile.setsampwidth(4)
+waveFile.setsampwidth(2)
 waveFile.setframerate(48000)
 waveFile.writeframes(b''.join(sineSignal))
 waveFile.close()
-
-convert(open("result/output2.wav", "rb"), open("result/output3.wav", "wb"))
